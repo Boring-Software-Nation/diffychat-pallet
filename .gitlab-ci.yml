@@ -1,0 +1,19 @@
+stages:          # List of stages for jobs, and their order of execution
+  #  - build_stage
+  - push_stage
+  #  - build_prod
+  #- push_prod
+
+deploy:
+  stage: push_stage
+  script:
+    - rm -rf /srv/parachain_docker || true 
+    - sudo -u ubuntu rsync -arv . /srv/parachain_docker 
+    - cd /srv/parachain_docker
+    - git checkout develop
+    - ./scripts/docker_run.sh || true
+  only:
+    - develop
+  tags:
+    - parachain_stage
+
