@@ -1,6 +1,14 @@
-# Substrate Node Template
-
 [![Try on playground](https://img.shields.io/badge/Playground-Node_Template-brightgreen?logo=Parity%20Substrate)](https://docs.substrate.io/playground/) [![Matrix](https://img.shields.io/matrix/substrate-technical:matrix.org)](https://matrix.to/#/#substrate-technical:matrix.org)
+
+# Diffy chat messenger
+
+The aim of this project is to develop a secured decentralized messenger that doesn’t store data on a centralized backend and uses personal Polkadot wallet credentials for chatting initiation and messaging.
+
+P2p channels between users are set using WebRTC. This Substrate pallet is used for exchanging SDP offers. For address discovery of NAT users any public STUN server can be used. All messages between users are encrypted with user’s public keys. This pallet also includes a “contacts” feature: a user is able to tie names to wallet addresses and organize his contacts in a common way.
+
+![image](https://user-images.githubusercontent.com/126072104/220610232-0b9a4033-97cc-44ba-8948-a610b2b0c4bf.png)
+
+# Substrate Node Template
 
 A fresh FRAME-based [Substrate](https://www.substrate.io/) node, ready for hacking :rocket:
 
@@ -229,3 +237,7 @@ by appending your own. A few useful ones are as follow.
 # Check whether the code is compilable
 ./scripts/docker_run.sh cargo check
 ```
+
+## Related repos
+
+- [Diffy chat DOTRTC library](https://github.com/Belsoft-rs/diffychat-dotrtc)
