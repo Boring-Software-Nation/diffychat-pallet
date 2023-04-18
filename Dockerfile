@@ -3,7 +3,7 @@
 # This is a base image to build substrate nodes
 FROM docker.io/paritytech/ci-linux:production as builder
 
-WORKDIR /node-template
+WORKDIR /diffychat
 COPY . .
 RUN cargo build --locked --release
 
@@ -18,20 +18,20 @@ LABEL description="Multistage Docker image for Substrate Node Template" \
   image.documentation="https://github.com/substrate-developer-hub/substrate-node-template"
 
 # Copy the node binary.
-COPY --from=builder /node-template/target/release/node-template /usr/local/bin
+COPY --from=builder /diffychat/target/release/diffychat /usr/local/bin
 
 RUN useradd -m -u 1000 -U -s /bin/sh -d /node-dev node-dev && \
   mkdir -p /chain-data /node-dev/.local/share && \
   chown -R node-dev:node-dev /chain-data && \
-  ln -s /chain-data /node-dev/.local/share/node-template && \
+  ln -s /chain-data /node-dev/.local/share/diffychat && \
   # unclutter and minimize the attack surface
   rm -rf /usr/bin /usr/sbin && \
   # check if executable works in this container
-  /usr/local/bin/node-template --version
+  /usr/local/bin/diffychat --version
 
 USER node-dev
 
 EXPOSE 30333 9933 9944 9615
 VOLUME ["/chain-data"]
 
-ENTRYPOINT ["/usr/local/bin/node-template"]
+ENTRYPOINT ["/usr/local/bin/diffychat"]
