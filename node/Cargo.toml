@@ -1,20 +1,20 @@
 [package]
-name = "node-template"
+name = "diffychat"
 version = "4.0.0-dev"
-description = "A fresh FRAME-based Substrate node, ready for hacking."
-authors = ["Substrate DevHub <https://github.com/substrate-developer-hub>"]
-homepage = "https://substrate.io/"
+description = "Chat backend pallet based on substrate blockchain"
+authors = ["Substrate DevHub <https://github.com/substrate-developer-hub>", "belsoft https://github.com/Belsoft-rs"]
+homepage = "https://belsoft.rs/"
 edition = "2021"
 license = "Unlicense"
 publish = false
-repository = "https://github.com/substrate-developer-hub/substrate-node-template/"
+repository = "https://github.com/Belsoft-rs/diffychat-pallet"
 build = "build.rs"
 
 [package.metadata.docs.rs]
 targets = ["x86_64-unknown-linux-gnu"]
 
 [[bin]]
-name = "node-template"
+name = "diffychat"
 
 [dependencies]
 clap = { version = "4.0.9", features = ["derive"] }
