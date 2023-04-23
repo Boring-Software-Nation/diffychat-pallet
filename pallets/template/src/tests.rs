@@ -1,4 +1,4 @@
-use crate::{mock::*, Error, Event};
+use crate::{mock::*, Error, Event, ItemByAccountId};
 use frame_support::{assert_noop, assert_ok};
 use frame_system::ensure_signed;
 
@@ -8,14 +8,20 @@ fn test_register() {
 		System::set_block_number(1);
 
 		let sender = RuntimeOrigin::signed(1);
+
+		let sender_addr = ensure_signed(sender.clone()).unwrap();
 		let nickname = [123_u8; 20];
 		let address = 123;
 
-		assert_ok!(TemplateModule::register(sender, nickname.clone(), address));
+		assert_ok!(TemplateModule::register(sender, nickname.clone(), address.clone()));
 
-		let addr_resp = TemplateModule::get_address_by_nickname(nickname);
+		let addr_resp = TemplateModule::get_address_by_nickname(nickname.clone());
 
-		assert_eq!(address, addr_resp)
+		assert_eq!(address, addr_resp);
+
+		let item_by_account_id = TemplateModule::get_address_by_account_id(sender_addr);
+
+		assert_eq!(item_by_account_id, ItemByAccountId { address, nickname })
 	})
 }
 
