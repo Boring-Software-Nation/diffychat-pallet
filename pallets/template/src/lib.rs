@@ -34,8 +34,8 @@ pub mod pallet {
 		Clone, Encode, Decode, Eq, PartialEq, MaxEncodedLen, RuntimeDebug, Default, TypeInfo,
 	)]
 	pub struct ItemByAccountId {
-		address: u32,
-		nickname: [u8; 20],
+		pub address: u32,
+		pub nickname: [u8; 20],
 	}
 
 	#[pallet::storage]
