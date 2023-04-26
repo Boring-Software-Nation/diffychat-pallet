@@ -124,113 +124,57 @@ local node template.
 If you want to see the multi-node consensus algorithm in action, refer to our
 [Simulate a network tutorial](https://docs.substrate.io/tutorials/get-started/simulate-network/).
 
-### Node
+### Substrate Builder Docker Image
 
-A blockchain node is an application that allows users to participate in a blockchain network.
-Substrate-based blockchain nodes expose a number of capabilities:
+Go to folder scripts/docker.
 
-- Networking: Substrate nodes use the [`libp2p`](https://libp2p.io/) networking stack to allow the
-  nodes in the network to communicate with one another.
-- Consensus: Blockchains must have a way to come to
-  [consensus](https://docs.substrate.io/main-docs/fundamentals/consensus/) on the state of the
-  network. Substrate makes it possible to supply custom consensus engines and also ships with
-  several consensus mechanisms that have been built on top of
-  [Web3 Foundation research](https://research.web3.foundation/en/latest/polkadot/NPoS/index.html).
-- RPC Server: A remote procedure call (RPC) server is used to interact with Substrate nodes.
+The Docker image in this folder is a `builder` image. It is self contained and allows users to build the binaries themselves.
+There is no requirement on having Rust or any other toolchain installed but a working Docker environment.
 
-There are several files in the `node` directory - take special note of the following:
+Unlike the `parity/polkadot` image which contains a single binary (`polkadot`!) used by default, the image in this folder builds and contains several binaries and you need to provide the name of the binary to be called.
 
-- [`chain_spec.rs`](./node/src/chain_spec.rs): A
-  [chain specification](https://docs.substrate.io/main-docs/build/chain-spec/) is a
-  source code file that defines a Substrate chain's initial (genesis) state. Chain specifications
-  are useful for development and testing, and critical when architecting the launch of a
-  production chain. Take note of the `development_config` and `testnet_genesis` functions, which
-  are used to define the genesis state for the local development chain configuration. These
-  functions identify some
-  [well-known accounts](https://docs.substrate.io/reference/command-line-tools/subkey/)
-  and use them to configure the blockchain's initial state.
-- [`service.rs`](./node/src/service.rs): This file defines the node implementation. Take note of
-  the libraries that this file imports and the names of the functions it invokes. In particular,
-  there are references to consensus-related topics, such as the
-  [block finalization and forks](https://docs.substrate.io/main-docs/fundamentals/consensus/#finalization-and-forks)
-  and other [consensus mechanisms](https://docs.substrate.io/main-docs/fundamentals/consensus/#default-consensus-models)
-  such as Aura for block authoring and GRANDPA for finality.
+You should refer to the [.Dockerfile](./substrate_builder.Dockerfile) for the actual list. At the time of editing, the list of included binaries is:
 
-After the node has been [built](#build), refer to the embedded documentation to learn more about the
-capabilities and configuration parameters that it exposes:
+- substrate
+- subkey
+- node-template
+- chain-spec-builder
 
-```shell
-./target/release/diffychat --help
+First, install [Docker](https://docs.docker.com/get-docker/).
+
+Then to generate the latest parity/substrate image. Please run:
+```sh
+./build.sh
 ```
 
-### Runtime
+> If you wish to create a debug build rather than a production build, then you may modify the [.Dockerfile](./substrate_builder.Dockerfile) replacing `cargo build --locked --release` with just `cargo build --locked` and replacing `target/release` with `target/debug`. 
+> If you get an error that a tcp port address is already in use then find an available port to use for the host port in the [.Dockerfile](./substrate_builder.Dockerfile).
+The image can be used by passing the selected binary followed by the appropriate tags for this binary.
 
-In Substrate, the terms
-"runtime" and "state transition function"
-are analogous - they refer to the core logic of the blockchain that is responsible for validating
-blocks and executing the state changes they define. The Substrate project in this repository uses
-[FRAME](https://docs.substrate.io/main-docs/fundamentals/runtime-intro/#frame) to construct a
-blockchain runtime. FRAME allows runtime developers to declare domain-specific logic in modules
-called "pallets". At the heart of FRAME is a helpful
-[macro language](https://docs.substrate.io/reference/frame-macros/) that makes it easy to
-create pallets and flexibly compose them to create blockchains that can address
-[a variety of needs](https://substrate.io/ecosystem/projects/).
+Your best guess to get started is to pass the `--help flag`. Here are a few examples:
 
-Review the [FRAME runtime implementation](./runtime/src/lib.rs) included in this template and note
-the following:
+- `./run.sh substrate --version`
+- `./run.sh subkey --help`
+- `./run.sh diffychat --version`
+- `./run.sh chain-spec-builder --help`
 
-- This file configures several pallets to include in the runtime. Each pallet configuration is
-  defined by a code block that begins with `impl $PALLET_NAME::Config for Runtime`.
-- The pallets are composed into a single runtime by way of the
-  [`construct_runtime!`](https://crates.parity.io/frame_support/macro.construct_runtime.html)
-  macro, which is part of the core
-  FRAME Support [system](https://docs.substrate.io/reference/frame-pallets/#system-pallets) library.
+Then try running the following command to start a single node development chain using the Substrate Node Template binary `diffychat`:
 
-### Pallets
-
-The runtime in this project is constructed using many FRAME pallets that ship with the
-[core Substrate repository](https://github.com/paritytech/substrate/tree/master/frame) and a
-template pallet that is [defined in the `pallets`](./pallets/template/src/lib.rs) directory.
-
-A FRAME pallet is compromised of a number of blockchain primitives:
-
-- Storage: FRAME defines a rich set of powerful
-  [storage abstractions](https://docs.substrate.io/main-docs/build/runtime-storage/) that makes
-  it easy to use Substrate's efficient key-value database to manage the evolving state of a
-  blockchain.
-- Dispatchables: FRAME pallets define special types of functions that can be invoked (dispatched)
-  from outside of the runtime in order to update its state.
-- Events: Substrate uses [events and errors](https://docs.substrate.io/main-docs/build/events-errors/)
-  to notify users of important changes in the runtime.
-- Errors: When a dispatchable fails, it returns an error.
-- Config: The `Config` configuration interface is used to define the types and parameters upon
-  which a FRAME pallet depends.
-
-### Run in Docker
-
-First, install [Docker](https://docs.docker.com/get-docker/) and
-[Docker Compose](https://docs.docker.com/compose/install/).
-
-Then run the following command to start a single node development chain.
-
-```bash
-./scripts/docker_run.sh
+```sh
+./run.sh diffychat --dev --ws-external
 ```
 
-This command will firstly compile your code, and then start a local development network. You can
-also replace the default command
-(`cargo build --release && ./target/release/diffychat --dev --ws-external`)
-by appending your own. A few useful ones are as follow.
+Note: It is recommended to provide a custom `--base-path` to store the chain database. For example:
 
-```bash
-# Run Substrate node without re-compiling
-./scripts/docker_run.sh ./target/release/diffychat --dev --ws-external
+```sh
+# Run Substrate Node Template without re-compiling
+./run.sh diffychat --dev --ws-external --base-path=/data
+```
 
+> To print logs follow the [Substrate debugging instructions](https://docs.substrate.io/test/debug/).
+```sh
 # Purge the local dev chain
-./scripts/docker_run.sh ./target/release/diffychat purge-chain --dev
-
-# Check whether the code is compilable
-./scripts/docker_run.sh cargo check
+./run.sh diffychat purge-chain --dev --base-path=/data -y
 ```
 
 ## Related repos
