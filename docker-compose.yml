@@ -1,0 +1,12 @@
+version: "3.2"
+services:
+  dev:
+    container_name: diffychat
+    restart: always
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "9944:9944"
+    environment:
+      - CARGO_HOME=/var/www/diffychat/.cargo

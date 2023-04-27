@@ -175,8 +175,13 @@ Note: It is recommended to provide a custom `--base-path` to store the chain dat
 ```sh
 # Purge the local dev chain
 ./run.sh diffychat purge-chain --dev --base-path=/data -y
-```
-
+```  
+  
+Then run the following command to start Substrate node without re-compiling.  
+```  
+./scripts/docker_run.sh  
+```  
+  
 ## Related repos
 
 - [Diffy chat DOTRTC library](https://github.com/Belsoft-rs/diffychat-dotrtc)
