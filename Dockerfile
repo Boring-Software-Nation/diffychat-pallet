@@ -10,11 +10,11 @@ RUN rustup target add --toolchain nightly wasm32-unknown-unknown && \
 
 # This is the 2nd stage: a very small image where we copy the binary."
 FROM docker.io/library/ubuntu:20.04
-LABEL description="Multistage Docker image for Substrate Node Template" \
+LABEL description="Multistage Docker image for Substrate Node Diffychat" \
   image.type="builder" \
   image.authors="you@email.com" \
   image.vendor="Substrate Developer Hub" \
-  image.description="Multistage Docker image for Substrate Node Template" \
+  image.description="Multistage Docker image for Substrate Node Diffychat" \
   image.source="https://github.com/substrate-developer-hub/substrate-node-template" \
   image.documentation="https://github.com/substrate-developer-hub/substrate-node-template"
 
