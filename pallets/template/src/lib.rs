@@ -34,7 +34,7 @@ pub mod pallet {
 		Clone, Encode, Decode, Eq, PartialEq, MaxEncodedLen, RuntimeDebug, Default, TypeInfo,
 	)]
 	pub struct ItemByAccountId {
-		pub address: u32,
+		pub address: [u8; 32],
 		pub nickname: [u8; 20],
 	}
 
@@ -43,7 +43,7 @@ pub mod pallet {
 	// Learn more about declaring storage items:
 	// https://docs.substrate.io/main-docs/build/runtime-storage/#declaring-storage-items
 	pub type ItemByNicknameStore<T: Config> =
-		StorageMap<_, Blake2_128Concat, [u8; 20], u32, ValueQuery>;
+		StorageMap<_, Blake2_128Concat, [u8; 20], [u8; 32], ValueQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn get_address_by_account_id)]
@@ -105,7 +105,11 @@ pub mod pallet {
 
 		#[pallet::call_index(1)]
 		#[pallet::weight(10_000 + T::DbWeight::get().reads_writes(1, 1).ref_time())]
-		pub fn register(origin: OriginFor<T>, nickname: [u8; 20], address: u32) -> DispatchResult {
+		pub fn register(
+			origin: OriginFor<T>,
+			nickname: [u8; 20],
+			address: [u8; 32],
+		) -> DispatchResult {
 			let owner = ensure_signed(origin)?;
 
 			if <ItemByAccountIdStore<T>>::contains_key(owner.clone()) {
