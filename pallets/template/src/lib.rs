@@ -113,11 +113,11 @@ pub mod pallet {
 			let owner = ensure_signed(origin)?;
 
 			if <ItemByAccountIdStore<T>>::contains_key(owner.clone()) {
-				return Err(Error::<T>::AccountIdAlreadyRegistered.into());
+				return Err(Error::<T>::AccountIdAlreadyRegistered.into())
 			}
 
 			if <ItemByNicknameStore<T>>::contains_key(nickname.clone()) {
-				return Err(Error::<T>::NicknameAlreadyRegistered.into());
+				return Err(Error::<T>::NicknameAlreadyRegistered.into())
 			}
 
 			<ItemByNicknameStore<T>>::insert(nickname, address);
