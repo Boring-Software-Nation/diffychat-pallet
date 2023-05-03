@@ -10,7 +10,7 @@ fn test_register() {
 		let sender = RuntimeOrigin::signed(1);
 
 		let sender_addr = ensure_signed(sender.clone()).unwrap();
-		let nickname = [123_u8; 20];
+		let nickname = [123_u8; 21];
 		let address = [1_u8; 32];
 
 		assert_ok!(TemplateModule::register(sender, nickname.clone(), address.clone()));
@@ -31,7 +31,7 @@ fn test_register_account_id_is_already_registered() {
 		System::set_block_number(1);
 
 		let sender = RuntimeOrigin::signed(1);
-		let nickname = [123_u8; 20];
+		let nickname = [123_u8; 21];
 		let address = [1_u8; 32];
 
 		assert_ok!(TemplateModule::register(sender.clone(), nickname.clone(), address));
@@ -55,7 +55,7 @@ fn test_register_nickname_is_already_registered() {
 		let sender = RuntimeOrigin::signed(1);
 		let sender2 = RuntimeOrigin::signed(2);
 
-		let nickname = [123_u8; 20];
+		let nickname = [123_u8; 21];
 		let address = [1_u8; 32];
 
 		assert_ok!(TemplateModule::register(sender, nickname.clone(), address));
