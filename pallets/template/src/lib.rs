@@ -16,7 +16,10 @@ mod benchmarking;
 
 #[frame_support::pallet]
 pub mod pallet {
-	use frame_support::pallet_prelude::{StorageMap, *};
+	use frame_support::{
+		pallet_prelude::{DispatchResult, StorageMap, *},
+		Blake2_128Concat,
+	};
 	use frame_system::pallet_prelude::{OriginFor, *};
 
 	#[pallet::pallet]
@@ -30,6 +33,33 @@ pub mod pallet {
 		type RuntimeEvent: From<Event<Self>> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
 	}
 
+	#[derive(Clone, Encode, Decode, Eq, PartialEq, MaxEncodedLen, RuntimeDebug, TypeInfo)]
+	pub struct ContactByAccountId {
+		// encoded name
+		pub name: EncodedContactName,
+	}
+
+	impl Default for ContactByAccountId {
+		fn default() -> Self {
+			ContactByAccountId { name: [0_u8; 1000] }
+		}
+	}
+
+	pub type EncodedContactName = [u8; 1000];
+	pub type EncodedContactAddr = [u8; 1000];
+
+	#[pallet::storage]
+	#[pallet::getter(fn get_contact_by_account_id)]
+	pub type ContactByAccountIdStore<T: Config> = StorageDoubleMap<
+		_,
+		Blake2_128Concat,
+		T::AccountId,
+		Blake2_128Concat,
+		EncodedContactAddr,
+		ContactByAccountId,
+		ValueQuery,
+	>;
+
 	#[derive(
 		Clone, Encode, Decode, Eq, PartialEq, MaxEncodedLen, RuntimeDebug, Default, TypeInfo,
 	)]
@@ -40,8 +70,6 @@ pub mod pallet {
 
 	#[pallet::storage]
 	#[pallet::getter(fn get_address_by_nickname)]
-	// Learn more about declaring storage items:
-	// https://docs.substrate.io/main-docs/build/runtime-storage/#declaring-storage-items
 	pub type ItemByNicknameStore<T: Config> =
 		StorageMap<_, Blake2_128Concat, [u8; 21], [u8; 32], ValueQuery>;
 
@@ -135,6 +163,33 @@ pub mod pallet {
 		) -> DispatchResult {
 			let who = ensure_signed(origin)?;
 			Self::deposit_event(Event::Answer { answer, answer_from: who, answer_to: to });
+			Ok(())
+		}
+		// updating or inserting contact to sender contact list
+		#[pallet::call_index(3)]
+		#[pallet::weight(10_000 + T::DbWeight::get().writes(1).ref_time())]
+		pub fn upsert_contact(
+			origin: OriginFor<T>,
+			contact_name: EncodedContactName,
+			contact_addr: EncodedContactAddr,
+		) -> DispatchResult {
+			let who = ensure_signed(origin)?;
+			<ContactByAccountIdStore<T>>::set(
+				who,
+				contact_addr,
+				ContactByAccountId { name: contact_name },
+			);
+			Ok(())
+		}
+
+		#[pallet::call_index(4)]
+		#[pallet::weight(10_000 + T::DbWeight::get().writes(1).ref_time())]
+		pub fn remove_contact(
+			origin: OriginFor<T>,
+			contact_addr: EncodedContactAddr,
+		) -> DispatchResult {
+			let who = ensure_signed(origin)?;
+			<ContactByAccountIdStore<T>>::remove(who, contact_addr);
 			Ok(())
 		}
 	}
