@@ -1,6 +1,48 @@
-use crate::{mock::*, Error, Event, ItemByAccountId};
+use crate::{mock::*, ContactByAccountId, Error, Event, ItemByAccountId};
 use frame_support::{assert_noop, assert_ok};
 use frame_system::ensure_signed;
+
+#[test]
+fn test_upsert_contact() {
+	new_test_ext().execute_with(|| {
+		System::set_block_number(1);
+
+		let sender = RuntimeOrigin::signed(1);
+
+		let sender_addr = ensure_signed(sender.clone()).unwrap();
+		let nickname = [4_u8; 1000];
+		let address = [1_u8; 1000];
+
+		assert_ok!(TemplateModule::upsert_contact(
+			sender.clone(),
+			nickname.clone(),
+			address.clone()
+		));
+
+		let addr_resp = TemplateModule::get_contact_by_account_id(sender_addr, address.clone());
+
+		assert_eq!(ContactByAccountId { name: nickname }, addr_resp);
+
+		let nickname2 = [2_u8; 1000];
+
+		assert_ok!(TemplateModule::upsert_contact(
+			sender.clone(),
+			nickname2.clone(),
+			address.clone()
+		));
+
+		let addr_resp = TemplateModule::get_contact_by_account_id(sender_addr, address.clone());
+
+		assert_eq!(ContactByAccountId { name: nickname2 }, addr_resp);
+
+		assert_ok!(TemplateModule::remove_contact(sender, address.clone()));
+
+		assert_eq!(
+			ContactByAccountId::default(),
+			TemplateModule::get_contact_by_account_id(sender_addr, address.clone())
+		);
+	})
+}
 
 #[test]
 fn test_register() {
