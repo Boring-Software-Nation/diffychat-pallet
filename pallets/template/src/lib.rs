@@ -17,7 +17,7 @@ mod benchmarking;
 #[frame_support::pallet]
 pub mod pallet {
 	use frame_support::{
-		pallet_prelude::{DispatchResult, StorageMap, *},
+		pallet_prelude::{DispatchResult, OptionQuery, StorageMap, *},
 		Blake2_128Concat,
 	};
 	use frame_system::pallet_prelude::{OriginFor, *};
@@ -71,7 +71,7 @@ pub mod pallet {
 	#[pallet::storage]
 	#[pallet::getter(fn get_address_by_nickname)]
 	pub type ItemByNicknameStore<T: Config> =
-		StorageMap<_, Blake2_128Concat, [u8; 21], [u8; 32], ValueQuery>;
+		StorageMap<_, Blake2_128Concat, [u8; 21], T::AccountId, OptionQuery>;
 
 	#[pallet::storage]
 	#[pallet::getter(fn get_address_by_account_id)]
@@ -148,7 +148,7 @@ pub mod pallet {
 				return Err(Error::<T>::NicknameAlreadyRegistered.into())
 			}
 
-			<ItemByNicknameStore<T>>::insert(nickname, address);
+			<ItemByNicknameStore<T>>::insert(nickname, owner.clone());
 			<ItemByAccountIdStore<T>>::insert(owner, ItemByAccountId { address, nickname });
 
 			Ok(())

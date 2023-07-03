@@ -59,7 +59,7 @@ fn test_register() {
 
 		let addr_resp = TemplateModule::get_address_by_nickname(nickname.clone());
 
-		assert_eq!(address, addr_resp);
+		assert_eq!(sender_addr, addr_resp.unwrap());
 
 		let item_by_account_id = TemplateModule::get_address_by_account_id(sender_addr);
 
@@ -75,12 +75,13 @@ fn test_register_account_id_is_already_registered() {
 		let sender = RuntimeOrigin::signed(1);
 		let nickname = [123_u8; 21];
 		let address = [1_u8; 32];
+		let sender_addr = ensure_signed(sender.clone()).unwrap();
 
 		assert_ok!(TemplateModule::register(sender.clone(), nickname.clone(), address));
 
 		let addr_resp = TemplateModule::get_address_by_nickname(nickname);
 
-		assert_eq!(address, addr_resp);
+		assert_eq!(sender_addr, addr_resp.unwrap());
 
 		assert_noop!(
 			TemplateModule::register(sender, nickname, address),
@@ -97,6 +98,8 @@ fn test_register_nickname_is_already_registered() {
 		let sender = RuntimeOrigin::signed(1);
 		let sender2 = RuntimeOrigin::signed(2);
 
+		let sender_addr = ensure_signed(sender.clone()).unwrap();
+
 		let nickname = [123_u8; 21];
 		let address = [1_u8; 32];
 
@@ -104,7 +107,7 @@ fn test_register_nickname_is_already_registered() {
 
 		let addr_resp = TemplateModule::get_address_by_nickname(nickname);
 
-		assert_eq!(address, addr_resp);
+		assert_eq!(sender_addr, addr_resp.unwrap());
 
 		assert_noop!(
 			TemplateModule::register(sender2, nickname, address),
