@@ -1,6 +1,6 @@
 [![Try on playground](https://img.shields.io/badge/Playground-Node_Template-brightgreen?logo=Parity%20Substrate)](https://docs.substrate.io/playground/) [![Matrix](https://img.shields.io/matrix/substrate-technical:matrix.org)](https://matrix.to/#/#substrate-technical:matrix.org)
 
-![Diffy chat pic narrow](https://github.com/Belsoft-rs/diffychat-pallet/assets/126072104/94d96b38-16ca-4b59-b68b-0ee8d99ee86c)
+![Diffy chat pic narrow](https://github.com/Belsoft-rs/diffychat-pallet/assets/126072104/a77ddd37-c9e8-441e-bbf7-efac5c2ecbb0)
 
 # Substrate Node for Diffy chat messenger
 
