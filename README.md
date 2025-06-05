@@ -186,4 +186,4 @@ Then run the following command to start Substrate node without re-compiling.
   
 ## Related repos
 
-- [Diffy chat DOTRTC library](https://github.com/Belsoft-rs/diffychat-dotrtc)
+- [Diffy chat DOTRTC library](https://github.com/Boring-Software-Nation/diffychat-dotrtc)
